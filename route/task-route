@@ -1,0 +1,17 @@
+const express = require('express');
+const router = express.Router();
+
+
+
+const addtask = require('../helper/addtask');
+
+
+
+router.post('/',addtask.postaddtask);
+router.get('/',addtask.getaddtask);
+router.put('/',addtask.puttaskadd);
+router.delete('/',addtask.deltaskadd);
+
+
+
+module.exports = router;
