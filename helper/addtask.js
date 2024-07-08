@@ -13,9 +13,10 @@ const getaddtask=(req,res)=>{
 
 
 const postaddtask=(req,res)=>{
+    if(req.body.id==1){
     const taskid = uuidNumber();
     const {title,description,date,complete}=req.body;
-    if(title && description ){
+    if(title && description && date ){
         const newtask={
             id: taskid,
             title:title,
@@ -29,6 +30,21 @@ const postaddtask=(req,res)=>{
     }
     else{
         res.status(400).json({message:"Please enter all fields"});
+    }}
+    else{
+        const {id,title,description,date,complete}=req.body;
+        const data = taskdata.findIndex((task) => task.id === id);
+        if(data){
+            taskdata[data].title=title;
+            taskdata[data].description=description;
+            taskdata[data].date=date;
+            taskdata[data].complete=complete;
+            res.status(200).json({message:"Task updated successfully"});
+            console.log(taskdata[data])
+        }
+        else{
+            res.status(404).json({message:"Task not found"});
+        }
     }
 }
 

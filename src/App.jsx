@@ -13,6 +13,9 @@ function App() {
   const [show, setShow] = useState(false);
   const [completedTasks, setCompletedTasks] = useState([]);
   const [incompleteTasks, setIncompleteTasks] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortOrder, setSortOrder] = useState('date-desc'); 
+
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
@@ -33,34 +36,70 @@ function App() {
         console.error('Error fetching todos:', error);
       });
       setmodedata(false)
-  }, [modedata]);
+  }, [modedata,sortOrder]);
+
+
+
+  const sortTasks = (tasks) => {
+    return tasks.sort((a, b) => {
+      const dateA = new Date(a.date);
+      const dateB = new Date(b.date);
+  
+      if (sortOrder === 'date-desc') {
+        return dateB - dateA;
+      } else {
+        return dateA - dateB;
+      }
+    });
+  };
+  
+
+  const handleSortChange = (e) => {
+    setSortOrder(e.target.value);
+  };
+  
+
+  
+
+
+const filteredIncompleteTasks = incompleteTasks.filter(task =>
+  task.title.toLowerCase().includes(searchQuery.toLowerCase())
+);
+
+const filteredCompletedTasks = completedTasks.filter(task =>
+  task.title.toLowerCase().includes(searchQuery.toLowerCase())
+);
+const sortedIncompleteTasks = sortTasks(filteredIncompleteTasks, sortOrder);
+const sortedCompletedTasks = sortTasks(filteredCompletedTasks, sortOrder);
+
   return (
     <>
       <div className="navbar">
         <h1 className="navbar-heading">My Tasks</h1>
-        <Button variant="primary" onClick={handleShow}>Add New Task</Button>
+        <Button className="addnewtask" variant="primary" onClick={handleShow}>Add New Task</Button>
       </div>
       <hr />
-      <SearchBar/>
+      <SearchBar setSearchQuery={setSearchQuery} searchQuery={searchQuery} sortOrder={sortOrder} handleSortChange={handleSortChange} />
       <div className="added-main">
         <p className="task_heading">Active Tasks</p>
         <div className="task_listing-page" id="task-list">
-        {incompleteTasks.map((task) => (
+        {sortedIncompleteTasks.map((task) => (
           <AddTaskCom
             key={task.id} task={task} setmodedata={setmodedata} handleShow={handleShow}/>))}
           </div>
         </div>
         <div className="complete-main">
         <div className="navbar">
-            <p className="navbar-heading">Completed Tasks</p>
+            <p className="task_heading">Completed Tasks</p>
             <Button variant="outline-primary" onClick={()=>clearallTodo().then(setmodedata(true))}>Clear Completed Tasks</Button>
         </div>
-        {completedTasks.map((task) => (
+        {sortedCompletedTasks.map((task) => (
           <AddTaskCom
             key={task.id} task={task} setmodedata={setmodedata} handleShow={handleShow} />))}
         </div>
 
       <AddTask
+        task={false}
         show={show}
         handleClose={handleClose}
         setmodedata={setmodedata}

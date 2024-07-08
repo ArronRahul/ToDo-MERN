@@ -2,9 +2,10 @@ import axios from "axios";
 import { CREATE,DELETE } from "./api";
 
 export const createTodo = async (todo) => {
-  const { title, description, date ,complete} = todo;
+  const {id,title, description, date ,complete} = todo;
   try {
     const response = await axios.post(`${CREATE}`, {
+      id: id,
       title: title,
       description: description,
       date: date,
